@@ -1,13 +1,8 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS"
-  },
-  "deploy": {
-    "startCommand": "dotnet CabBookingSystem.dll --urls \"http://0.0.0.0:${PORT:-5000}\"",
-    "restartPolicyType": "ON_FAILURE",
-    "sleep": {
-      "enabled": true
-    }
+    "builder": "NIXPACKS",
+    "buildCommand": "dotnet publish -c Release -o /tmp/publish --runtime linux-x64",
+    "startCommand": "dotnet /tmp/publish/CabBookingSystem.dll --urls \"http://0.0.0.0:$PORT\""
   }
 }
