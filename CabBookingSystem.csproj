@@ -8,6 +8,7 @@
     <!-- Add these for Railway -->
     <TargetFramework>net6.0</TargetFramework>
     <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishReadyToRun>true</PublishReadyToRun>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
