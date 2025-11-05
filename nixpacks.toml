@@ -1,0 +1,8 @@
+[ "phases.setup" ]
+cmds = ["dotnet restore"]
+
+[phases.build]
+cmds = ["dotnet publish -c Release -o /tmp/publish"]
+
+[start]
+cmd = "dotnet /tmp/publish/CabBookingSystem.dll --urls \"http://0.0.0.0:$PORT\""
