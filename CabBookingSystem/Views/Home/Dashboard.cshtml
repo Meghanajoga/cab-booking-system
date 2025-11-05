@@ -1,0 +1,527 @@
+﻿@using CabBookingSystem.Models
+@using CabBookingSystem.ViewModels
+@model CabBookingSystem.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard - RideEase";
+    var firstName = Context.Session.GetString("FirstName");
+}
+
+<style>
+    /* ===== COMPACT DASHBOARD STYLES ===== */
+    .dashboard-container {
+        min-height: 70vh;
+        padding: 1rem 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-section {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%), repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(102, 126, 234, 0.03) 5px, rgba(102, 126, 234, 0.03) 10px);
+        backdrop-filter: blur(15px);
+        border-radius: 16px;
+        padding: 1.5rem 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 0 40px rgba(37, 99, 235, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        text-align: center;
+        position: relative;
+        max-width: 90%;
+        min-height: 20vh;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+        .welcome-section h1 {
+            font-size: 3.0rem;
+            font-weight: 1000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section .lead {
+            font-size: 2.0rem;
+            color: #4b5563;
+            font-weight: 700;
+        }
+
+    /* Compact Stats Cards */
+    .stats-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+        backdrop-filter: blur(20px);
+        border-radius: 14px;
+        padding: 1.25rem 1rem;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        transition: all 0.3s ease;
+        min-height: 25vh;
+        text-align: center;
+        max-width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-card.primary-card {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.95) 0%, rgba(59, 130, 246, 0.85) 100%);
+            color: white;
+        }
+
+        .stats-card.success-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95) 0%, rgba(52, 211, 153, 0.85) 100%);
+            color: white;
+        }
+
+        .stats-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: inherit;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats-card h5 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.95;
+            font-weight: 600;
+            color: inherit;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .stats-card .h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+            color: inherit;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats-card small {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            color: inherit;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            font-weight: 500;
+        }
+
+    /* Compact Activity Card */
+    .activity-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        overflow: hidden;
+        max-width: 90%;
+        min-height: 40vh;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+        .activity-card .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1.25rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.3rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Compact List Group Items */
+    .list-group-item {
+        border: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        padding: 1.25rem 1.5rem;
+        transition: all 0.2s ease;
+        background: transparent;
+    }
+
+        .list-group-item:hover {
+            background: rgba(37, 99, 235, 0.08);
+            transform: translateX(5px);
+        }
+
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-group-item h6 {
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .list-group-item p {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .list-group-item .text-muted {
+            color: #9ca3af !important;
+            font-size: 0.85rem;
+        }
+
+    /* Enhanced Badges */
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .bg-success {
+        background: linear-gradient(135deg, #10b981, #34d399) !important;
+        color: white !important;
+    }
+
+    .bg-primary {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
+        color: white !important;
+    }
+
+    .bg-info {
+        background: linear-gradient(135deg, #06b6d4, #22d3ee) !important;
+        color: white !important;
+    }
+
+    .bg-danger {
+        background: linear-gradient(135deg, #ef4444, #f87171) !important;
+        color: white !important;
+    }
+
+    .bg-warning {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24) !important;
+        color: white !important;
+    }
+
+    /* Compact No Rides State */
+    .no-rides-state {
+        padding: 3rem 1.5rem;
+        text-align: center;
+    }
+
+        .no-rides-state h5 {
+            color: #6b7280;
+            margin-bottom: 0.75rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .no-rides-state p {
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+    /* Compact Ratings Button */
+    .ratings-btn {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.95) 0%, rgba(251, 191, 36, 0.85) 100%);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+        color: white;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Particle Effects */
+    .particle {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        animation: floatParticle 8s infinite ease-in-out;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+        .particle:nth-child(1) {
+            top: 15%;
+            left: 8%;
+            width: 4px;
+            height: 4px;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            top: 65%;
+            left: 82%;
+            width: 6px;
+            height: 6px;
+            animation-delay: 1s;
+        }
+
+        .particle:nth-child(3) {
+            top: 35%;
+            left: 88%;
+            width: 3px;
+            height: 3px;
+            animation-delay: 2s;
+        }
+
+    @@keyframes floatParticle {
+        0%, 100% {
+            transform: translate(0, 0);
+            opacity: 0.6;
+        }
+
+        50% {
+            transform: translate(10px, -10px);
+            opacity: 0.8;
+        }
+    }
+
+    /* Make sure content stays above particles */
+    .welcome-section,
+    .stats-card,
+    .activity-card,
+    .alert {
+        position: relative;
+        z-index: 1;
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-container {
+            padding: 0.5rem 0;
+        }
+
+        .welcome-section {
+            padding: 1rem 0.75rem;
+            max-width: 95%;
+        }
+
+            .welcome-section h1 {
+                font-size: 2rem;
+            }
+
+        .stats-card {
+            padding: 1rem 0.75rem;
+            max-width: 95%;
+        }
+
+            .stats-card .h2 {
+                font-size: 1.8rem;
+            }
+
+            .stats-card h3 {
+                font-size: 1.5rem;
+            }
+
+        .activity-card {
+            max-width: 95%;
+        }
+
+        .list-group-item {
+            padding: 1rem 1.25rem;
+        }
+
+            .list-group-item h6 {
+                font-size: 1rem;
+            }
+
+            .list-group-item p {
+                font-size: 0.9rem;
+            }
+    }
+</style>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+
+<div class="dashboard-container">
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Cancellation Success Message -->
+            @if (TempData["CancellationMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                    <h5>✅ Booking Cancelled Successfully!</h5>
+                    <p class="mb-1">@TempData["CancellationMessage"]</p>
+                    @if (TempData["CancellationDetails"] != null)
+                    {
+                        <small class="text-muted">@TempData["CancellationDetails"]</small>
+                    }
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Welcome Section -->
+            <div class="welcome-section glass-effect fade-in-up">
+                <h1>RideEase</h1>
+                <p class="lead">Hello @firstName, where would you like to go today?</p>
+            </div>
+
+            <!-- Real Stats Overview -->
+            <div class="row mb-5">
+                <div class="col-md-6 mb-4">
+                    <div class="stats-card bg-primary text-white fade-in-up">
+                        <h3>🚗</h3>
+                        <h5>Total Rides</h5>
+                        <p class="h2">@Model.TotalRides</p>
+                        <small>In this month</small>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="stats-card bg-success text-white fade-in-up">
+                        <h3>💰</h3>
+                        <h5>Total Spent</h5>
+                        <p class="h2">₹@Model.TotalSpent.ToString("F2")</p>
+                        <small>In this month</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity - Real Data -->
+            <div class="activity-card fade-in-up">
+                <div class="card-header">
+                    <h4 class="mb-0">📊 Recent Activity</h4>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentBookings.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var booking in Model.RecentBookings)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-2">🚗 Ride to @booking.DropoffLocation</h6>
+                                            <p class="mb-1">@booking.Cab?.Type • ₹@booking.Fare.ToString("F2")</p>
+                                            <small class="text-muted">Status: <span class="badge bg-@GetStatusBadgeColor(booking.Status)">@booking.Status</span></small>
+                                        </div>
+                                        <small class="text-muted ms-3">@booking.BookingTime.ToString("MMM dd, yyyy")</small>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="no-rides-state">
+                            <h5>No rides yet 🚗</h5>
+                            <p>Book your first ride to see your activity here!</p>
+                            <a asp-action="BookRide" asp-controller="Home" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus me-2"></i>Book Your First Ride
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ratings Button - Fixed at Bottom Right -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <button type="button" class="btn ratings-btn btn-lg rounded-pill shadow" data-bs-toggle="modal" data-bs-target="#ratingsModal">
+        ⭐ Rate Us
+    </button>
+</div>
+
+<!-- Ratings Modal -->
+<div class="modal fade" id="ratingsModal" tabindex="-1" aria-labelledby="ratingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ratingsModalLabel">⭐ Rate Your Experience</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="mb-4">How was your experience with RideEase?</p>
+                <div class="rating-stars mb-4">
+                    <span class="star" data-rating="1">☆</span>
+                    <span class="star" data-rating="2">☆</span>
+                    <span class="star" data-rating="3">☆</span>
+                    <span class="star" data-rating="4">☆</span>
+                    <span class="star" data-rating="5">☆</span>
+                </div>
+                <textarea class="form-control mb-3" placeholder="Share your feedback (optional)" rows="3"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitRating">Submit Rating</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Star rating functionality
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.getAttribute('data-rating');
+
+                // Remove active class from all stars
+                document.querySelectorAll('.star').forEach(s => {
+                    s.classList.remove('active');
+                    s.textContent = '☆';
+                });
+
+                // Add active class to clicked star and all previous stars
+                document.querySelectorAll('.star').forEach(s => {
+                    if (s.getAttribute('data-rating') <= rating) {
+                        s.classList.add('active');
+                        s.textContent = '⭐';
+                    }
+                });
+            });
+        });
+
+        // Submit rating
+        document.getElementById('submitRating').addEventListener('click', function() {
+            const activeStars = document.querySelectorAll('.star.active').length;
+            if (activeStars > 0) {
+                alert(`Thank you for your ${activeStars} star rating!`);
+
+                // Here you would typically send the rating to your backend
+                // For now, we'll just close the modal
+                var modal = bootstrap.Modal.getInstance(document.getElementById('ratingsModal'));
+                modal.hide();
+
+                // Reset stars
+                document.querySelectorAll('.star').forEach(s => {
+                    s.classList.remove('active');
+                    s.textContent = '☆';
+                });
+                document.querySelector('textarea').value = '';
+            } else {
+                alert('Please select a rating');
+            }
+        });
+    </script>
+}
+
+@functions {
+    private string GetStatusBadgeColor(BookingStatus status)
+    {
+        return status switch
+        {
+            BookingStatus.Completed => "success",
+            BookingStatus.InProgress => "primary",
+            BookingStatus.Confirmed => "info",
+            BookingStatus.Cancelled => "danger",
+            _ => "warning"
+        };
+    }
+}

@@ -1,0 +1,271 @@
+﻿@model CabBookingSystem.ViewModels.BookingViewModel
+@{
+    ViewData["Title"] = "Book a Ride";
+}
+
+<style>
+    /* ===== BOOK RIDE STYLES ===== */
+    .booking-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+
+    .booking-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 0 100px rgba(37, 99, 235, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        width: 100%;
+        max-width: 600px;
+    }
+
+        .booking-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15), 0 0 150px rgba(37, 99, 235, 0.2);
+        }
+
+    .booking-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+        .booking-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+    .booking-form .form-label {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .booking-form .form-control {
+        padding: 1rem 1.25rem;
+        font-size: 1.1rem;
+        border: 2px solid rgba(226, 232, 240, 0.8);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+        margin-bottom: 0.5rem;
+    }
+
+        .booking-form .form-control:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+    .booking-form select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.75rem center;
+        background-repeat: no-repeat;
+        background-size: 16px 12px;
+        padding-right: 2.5rem;
+    }
+
+    .booking-form .form-group {
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .booking-form .form-group:focus-within {
+            transform: translateY(-2px);
+        }
+
+    .btn-book-ride {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 1.25rem 2.5rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border-radius: 12px;
+        color: white;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        width: 100%;
+        margin-top: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-book-ride:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4), 0 0 50px rgba(118, 75, 162, 0.2);
+        }
+
+        .btn-book-ride:active {
+            transform: translateY(-1px);
+        }
+
+    .text-danger {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-top: 0.25rem;
+    }
+
+    /* Option styling for select dropdown */
+    select option {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+        select option:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .booking-container {
+            padding: 1rem 0;
+        }
+
+        .booking-card {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .booking-header h2 {
+            font-size: 2rem;
+        }
+
+        .booking-form .form-control {
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+        }
+
+        .btn-book-ride {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+    }
+
+    /* Animation for form elements */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .booking-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .form-group:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .form-group:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .form-group:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .btn-book-ride {
+        animation-delay: 0.4s;
+    }
+</style>
+
+<div class="booking-container">
+    <div class="row justify-content-center w-100">
+        <div class="col-12">
+            <div class="booking-card">
+                <div class="booking-header">
+                    <h2>Book a Ride</h2>
+                    <p class="text-muted">Fast, reliable, and affordable cab service</p>
+                </div>
+
+                <form asp-action="Create" asp-controller="Booking" method="post" class="booking-form">
+                    <div class="form-group">
+                        <label asp-for="PickupLocation" class="form-label">
+                            <i class="fas fa-map-marker-alt me-2"></i>Pickup Location
+                        </label>
+                        <input asp-for="PickupLocation" class="form-control" id="pickupLocation" placeholder="Enter pickup address" />
+                        <span asp-validation-for="PickupLocation" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DropoffLocation" class="form-label">
+                            <i class="fas fa-flag me-2"></i>Dropoff Location
+                        </label>
+                        <input asp-for="DropoffLocation" class="form-control" id="dropoffLocation" placeholder="Enter destination address" />
+                        <span asp-validation-for="DropoffLocation" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="CabType" class="form-label">
+                            <i class="fas fa-car me-2"></i>Cab Type
+                        </label>
+                        <select asp-for="CabType" class="form-control">
+                            <option value="">Select Cab Type</option>
+                            <option value="Mini">🚗 Mini (₹25 + ₹12/km)</option>
+                            <option value="Sedan">🚙 Sedan (₹35 + ₹15/km)</option>
+                            <option value="SUV">🚘 SUV (₹50 + ₹20/km)</option>
+                            <option value="Luxury">🏎️ Luxury (₹80 + ₹30/km)</option>
+                        </select>
+                        <span asp-validation-for="CabType" class="text-danger"></span>
+                    </div>
+
+                    <input type="hidden" asp-for="PickupLatitude" id="pickupLat" />
+                    <input type="hidden" asp-for="PickupLongitude" id="pickupLng" />
+                    <input type="hidden" asp-for="DropoffLatitude" id="dropoffLat" />
+                    <input type="hidden" asp-for="DropoffLongitude" id="dropoffLng" />
+
+                    <button type="submit" class="btn btn-book-ride">
+                        <i class="fas fa-taxi me-2"></i>Book Ride Now
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Simple geocoding simulation - in production, use Google Maps API or similar
+        document.getElementById('pickupLocation').addEventListener('blur', function() {
+            // Simulate getting coordinates
+            document.getElementById('pickupLat').value = (Math.random() * 180 - 90).toFixed(6);
+            document.getElementById('pickupLng').value = (Math.random() * 360 - 180).toFixed(6);
+        });
+
+        document.getElementById('dropoffLocation').addEventListener('blur', function() {
+            // Simulate getting coordinates
+            document.getElementById('dropoffLat').value = (Math.random() * 180 - 90).toFixed(6);
+            document.getElementById('dropoffLng').value = (Math.random() * 360 - 180).toFixed(6);
+        });
+
+        // Add focus effects
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    </script>
+}

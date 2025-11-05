@@ -1,0 +1,65 @@
+﻿@model CabBookingSystem.Models.Payment
+@{
+    ViewData["Title"] = "Payment Successful";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-header bg-success text-white text-center">
+                    <h3>✅ Payment @(Model.Method == PaymentMethod.Cash ? "Arranged" : "Successful")!</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        @if (Model.Method == PaymentMethod.Cash)
+                        {
+                            <i class="fas fa-money-bill-wave text-success" style="font-size: 4rem;"></i>
+                        }
+                        else
+                        {
+                            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                        }
+                    </div>
+
+                    @if (Model.Method == PaymentMethod.Cash)
+                    {
+                        <h4>Cash Payment Arranged! 💵</h4>
+                        <p class="text-muted">Please pay ₹@Model.Amount.ToString("F2") in cash to the driver when you complete your ride.</p>
+                    }
+                    else
+                    {
+                        <h4>Thank you for your payment!</h4>
+                        <p class="text-muted">Your ride has been confirmed and the driver will be assigned shortly.</p>
+                    }
+
+                    <div class="alert alert-info text-start">
+                        <p><strong>Payment Method:</strong> @Model.Method</p>
+                        <p><strong>Amount:</strong> ₹@Model.Amount.ToString("F2")</p>
+                        @if (Model.Method != PaymentMethod.Cash && !string.IsNullOrEmpty(Model.TransactionId))
+                        {
+                            <p><strong>Transaction ID:</strong> @Model.TransactionId</p>
+                        }
+                        <p><strong>Payment Date:</strong> @Model.PaymentDate.ToString("f")</p>
+                    </div>
+
+                    @if (Model.Method == PaymentMethod.Cash)
+                    {
+                        <div class="alert alert-warning">
+                            <strong>Note:</strong> Your ride is confirmed. Please have the exact amount ready for the driver.
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2">
+                        <a asp-action="MyBookings" asp-controller="Booking" class="btn btn-primary">
+                            View My Bookings
+                        </a>
+                        <a asp-action="Dashboard" asp-controller="Home" class="btn btn-outline-secondary">
+                            Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

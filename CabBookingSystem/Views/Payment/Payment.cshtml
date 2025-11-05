@@ -1,0 +1,147 @@
+﻿@model CabBookingSystem.ViewModels.PaymentViewModel
+@{
+    ViewData["Title"] = "Payment";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>💳 Complete Payment</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5>Payment Amount: ₹@Model.Amount.ToString("F2")</h5>
+                    </div>
+
+                    <form asp-action="ProcessPayment" method="post">
+                        <input type="hidden" asp-for="BookingId" />
+                        <input type="hidden" asp-for="Amount" />
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Select Payment Method</label>
+                            <div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="CreditCard" id="creditCard">
+                                    <label class="form-check-label" for="creditCard">
+                                        💳 Credit Card
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="DebitCard" id="debitCard">
+                                    <label class="form-check-label" for="debitCard">
+                                        🏦 Debit Card
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="UPI" id="upi">
+                                    <label class="form-check-label" for="upi">
+                                        📱 UPI
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="Wallet" id="wallet">
+                                    <label class="form-check-label" for="wallet">
+                                        👛 Wallet
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="Cash" id="cash">
+                                    <label class="form-check-label" for="cash">
+                                        💵 Cash
+                                    </label>
+                                </div>
+                            </div>
+                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                        </div>
+
+                        <!-- Credit/Debit Card Fields (initially hidden) -->
+                        <div id="cardFields" class="payment-method-fields" style="display: none;">
+                            <div class="form-group mb-3">
+                                <label asp-for="CardNumber" class="form-label"></label>
+                                <input asp-for="CardNumber" class="form-control" placeholder="1234 5678 9012 3456" />
+                                <span asp-validation-for="CardNumber" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label asp-for="CardHolderName" class="form-label"></label>
+                                <input asp-for="CardHolderName" class="form-control" placeholder="John Doe" />
+                                <span asp-validation-for="CardHolderName" class="text-danger"></span>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="ExpiryDate" class="form-label"></label>
+                                        <input asp-for="ExpiryDate" class="form-control" placeholder="MM/YY" />
+                                        <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label asp-for="CVV" class="form-label"></label>
+                                        <input asp-for="CVV" class="form-control" placeholder="123" />
+                                        <span asp-validation-for="CVV" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- UPI Fields (initially hidden) -->
+                        <div id="upiFields" class="payment-method-fields" style="display: none;">
+                            <div class="form-group mb-3">
+                                <label asp-for="UpiId" class="form-label"></label>
+                                <input asp-for="UpiId" class="form-control" placeholder="yourname@upi" />
+                                <span asp-validation-for="UpiId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Wallet Fields (initially hidden) -->
+                        <div id="walletFields" class="payment-method-fields" style="display: none;">
+                            <div class="form-group mb-3">
+                                <label asp-for="WalletType" class="form-label"></label>
+                                <select asp-for="WalletType" class="form-control">
+                                    <option value="">Select Wallet</option>
+                                    <option value="Paytm">Paytm</option>
+                                    <option value="PhonePe">PhonePe</option>
+                                    <option value="Google Pay">Google Pay</option>
+                                    <option value="Amazon Pay">Amazon Pay</option>
+                                </select>
+                                <span asp-validation-for="WalletType" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                💳 Pay ₹@Model.Amount.ToString("F2")
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Show/hide payment method fields based on selection
+        document.querySelectorAll('input[name="PaymentMethod"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Hide all fields
+                document.querySelectorAll('.payment-method-fields').forEach(field => {
+                    field.style.display = 'none';
+                });
+
+                // Show relevant fields
+                const method = this.value;
+                if (method === 'CreditCard' || method === 'DebitCard') {
+                    document.getElementById('cardFields').style.display = 'block';
+                } else if (method === 'UPI') {
+                    document.getElementById('upiFields').style.display = 'block';
+                } else if (method === 'Wallet') {
+                    document.getElementById('walletFields').style.display = 'block';
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Payment Failed";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white text-center">
+                    <h3>❌ Payment Failed</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-times-circle text-danger" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="text-danger mb-3">Payment Unsuccessful</h4>
+                    <p class="text-muted mb-4">
+                        We couldn't process your payment. Please check your payment details and try again.
+                    </p>
+
+                    <div class="alert alert-warning">
+                        <strong>Possible reasons:</strong>
+                        <ul class="text-start mt-2">
+                            <li>Insufficient balance</li>
+                            <li>Network issues</li>
+                            <li>Invalid UPI ID</li>
+                            <li>Transaction timeout</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a asp-action="Payment" asp-controller="Payment"
+                           asp-route-bookingId="@Context.Request.Query["bookingId"]"
+                           class="btn btn-primary">
+                            🔄 Try Again
+                        </a>
+                        <a asp-action="MyBookings" asp-controller="Booking"
+                           class="btn btn-outline-secondary">
+                            📋 My Bookings
+                        </a>
+                        <a asp-action="Dashboard" asp-controller="Home"
+                           class="btn btn-outline-primary">
+                            🏠 Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+        padding: 1.5rem;
+    }
+
+    .btn {
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+    }
+</style>

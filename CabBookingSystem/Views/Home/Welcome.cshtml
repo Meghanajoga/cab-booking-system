@@ -1,0 +1,459 @@
+﻿@{
+    ViewData["Title"] = "Welcome to RideEase";
+    Layout = "_Layout"; // ADD THIS LINE
+}
+
+<div class="welcome-container">
+    <!-- Animated Background -->
+    <div class="background-animation">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        <div class="floating-shape shape-4"></div>
+    </div>
+
+    <div class="welcome-content">
+        <div class="text-center">
+            <!-- Animated Logo/Icon -->
+            <div class="welcome-icon mb-4">
+                <div class="cab-animation">
+                    🚕
+                </div>
+            </div>
+
+            <!-- Main Heading with Animation -->
+            <h1 class="display-4 mb-4 welcome-title">
+                Welcome to <span class="brand-highlight">RideEase</span>
+            </h1>
+            <!-- Subtitle -->
+            <p class="lead mb-5 welcome-subtitle">
+                Book your ride in seconds. Fast, reliable, and affordable cab service at your fingertips.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="welcome-actions">
+                <a asp-action="Register" asp-controller="Account" class="btn btn-get-started btn-lg">
+                    <span class="btn-icon">🎯</span>
+                    Get Started
+                </a>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="features-grid mt-5 pt-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-5 col-md-6">
+                        <div class="feature-card">
+                            <div class="feature-icon">🚀</div>
+                            <h3>Lightning Fast Booking</h3>
+                            <p>Book your perfect ride in just 30 seconds with our intuitive interface</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-6">
+                        <div class="feature-card">
+                            <div class="feature-icon">💰</div>
+                            <h3>Transparent Pricing</h3>
+                            <p>No surprise charges. Know your fare before you book with fixed pricing</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-4">
+                    <div class="col-lg-5 col-md-6">
+                        <div class="feature-card">
+                            <div class="feature-icon">🛡️</div>
+                            <h3>Safe & Secure</h3>
+                            <p>Verified drivers and real-time tracking for your peace of mind</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-6">
+                        <div class="feature-card">
+                            <div class="feature-icon">🌟</div>
+                            <h3>Premium Service</h3>
+                            <p>Luxury cabs and professional drivers for a comfortable journey</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* HIDE THE DEFAULT LAYOUT HEADER AND FOOTER */
+    header, footer {
+        display: none !important;
+    }
+
+    /* Reset body and html for full-screen */
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Your existing welcome container styles - MODIFIED */
+    .welcome-container {
+        position: relative;
+        min-height: 100vh;
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        overflow-x: hidden;
+        color: white;
+        margin-top: -60px; /* Compensate for hidden header */
+    }
+
+    /* Welcome Content */
+    .welcome-content {
+        position: relative;
+        z-index: 2;
+        padding: 4rem 2rem;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Animated Background - Full Screen */
+    .background-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+    }
+
+    .floating-shape {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .shape-1 {
+        width: 120px;
+        height: 120px;
+        top: 10%;
+        left: 5%;
+        animation-delay: 0s;
+    }
+
+    .shape-2 {
+        width: 180px;
+        height: 180px;
+        top: 60%;
+        right: 5%;
+        animation-delay: 2s;
+    }
+
+    .shape-3 {
+        width: 90px;
+        height: 90px;
+        bottom: 15%;
+        left: 15%;
+        animation-delay: 4s;
+    }
+
+    .shape-4 {
+        width: 150px;
+        height: 150px;
+        top: 25%;
+        right: 15%;
+        animation-delay: 1s;
+    }
+
+    /* Welcome Icon Animation */
+    .welcome-icon {
+        margin-bottom: 2rem;
+    }
+
+    .cab-animation {
+        font-size: 5rem;
+        animation: bounce 2s ease-in-out infinite;
+        display: inline-block;
+    }
+
+    /* Typography */
+    .welcome-title {
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 1s ease-out;
+        font-size: 3.5rem;
+    }
+
+    .brand-highlight {
+        background: linear-gradient(45deg, #FFD700, #FFA500);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .welcome-subtitle {
+        font-size: 1.4rem;
+        opacity: 0.9;
+        animation: fadeInUp 1s ease-out 0.3s both;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Buttons */
+    .welcome-actions {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeInUp 1s ease-out 0.6s both;
+        margin-bottom: 2rem;
+    }
+
+    .btn-get-started {
+        background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+        border: none;
+        padding: 1.2rem 3rem;
+        border-radius: 50px;
+        font-weight: 600;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+        .btn-get-started:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+            color: white;
+        }
+
+    .btn-login {
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 1.2rem 3rem;
+        border-radius: 50px;
+        font-weight: 600;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+        .btn-login:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            color: white;
+        }
+
+    .btn-icon {
+        font-size: 1.3rem;
+    }
+
+    /* Features Grid */
+    .features-grid {
+        animation: fadeInUp 1s ease-out 0.9s both;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .feature-card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2.5rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        margin: 1rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+    .feature-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .feature-card p {
+        opacity: 0.8;
+        line-height: 1.6;
+        font-size: 1.1rem;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        animation: fadeInUp 1s ease-out 1.2s both;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .stat-number {
+        font-size: 3.5rem;
+        font-weight: 700;
+        background: linear-gradient(45deg, #FFD700, #FFA500);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.8;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Animations */
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+        }
+
+        50% {
+            transform: translateY(-25px) rotate(180deg);
+        }
+    }
+
+    @@keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-15px);
+        }
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .welcome-content {
+            padding: 2rem 1rem;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+        }
+
+        .cab-animation {
+            font-size: 4rem;
+        }
+
+        .welcome-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-get-started,
+        .btn-login {
+            width: 280px;
+            justify-content: center;
+            padding: 1rem 2rem;
+        }
+
+        .feature-card {
+            padding: 2rem 1.5rem;
+            margin: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+        }
+
+        .floating-shape {
+            display: none; /* Hide shapes on mobile for better performance */
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .welcome-title {
+            font-size: 2rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1rem;
+        }
+
+        .feature-card {
+            padding: 1.5rem 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Your existing JavaScript remains the same
+        function animateCounter() {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-count');
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        counter.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        if (target === 4.8) {
+                            counter.textContent = current.toFixed(1);
+                        } else {
+                            counter.textContent = Math.floor(current);
+                        }
+                    }
+                }, 16);
+            });
+        }
+
+        // Start animation when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(animateCounter, 1500);
+        });
+    </script>
+}

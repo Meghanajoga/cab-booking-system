@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "RideEase - Book Your Ride";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto text-center">
+            <h1 class="display-4 text-primary mb-4">🚕 RideEase</h1>
+            <p class="lead mb-5">Ready to book your ride? Choose an option below to get started.</p>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="card-title">New User?</h3>
+                            <p class="card-text">Create an account to start booking rides</p>
+                            <a asp-action="Register" asp-controller="Account" class="btn btn-primary btn-lg">
+                                Register Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="card-title">Existing User?</h3>
+                            <p class="card-text">Login to your account</p>
+                            <a asp-action="Login" asp-controller="Account" class="btn btn-outline-primary btn-lg">
+                                Login
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5">
+                <h3>Why Choose RideEase?</h3>
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4>🚗</h4>
+                            <h5>Multiple Cab Types</h5>
+                            <p>Mini, Sedan, SUV, Luxury</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4>⏱️</h4>
+                            <h5>Quick Response</h5>
+                            <p>Instant cab allocation</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4>💰</h4>
+                            <h5>Best Prices</h5>
+                            <p>No surge pricing</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4>🔒</h4>
+                            <h5>Safe Rides</h5>
+                            <p>Verified drivers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
