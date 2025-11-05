@@ -10,4 +10,18 @@
       "enabled": true
     }
   }
+  {
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "dotnet publish -c Release -o /tmp/publish",
+    "startCommand": "dotnet /tmp/publish/CabBookingSystem.dll --urls \"http://0.0.0.0:$PORT\"",
+    "nixpacksConfig": {
+      "phases": {
+        "setup": {
+          "aptPkgs": ["dotnet-sdk-8.0"]
+        }
+      }
+    }
+  }
+}
 }
