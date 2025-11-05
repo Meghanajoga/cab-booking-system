@@ -4,11 +4,6 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    
-    <!-- Keep these for Railway -->
-    <PublishReadyToRun>true</PublishReadyToRun>
-    <!-- <PublishSingleFile>true</PublishSingleFile> -->
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
