@@ -4,9 +4,14 @@ using CabBookingSystem.Repositories.MongoDB;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-// SSL FIX - Add at the VERY TOP of Program.cs
-using System.Security.Cryptography.X509Certificates;
+// SSL FIX - Add at the VERY TOP
+using System.Net;
 using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+
+// Bypass SSL certificate validation
+ServicePointManager.ServerCertificateValidationCallback = 
+    (sender, certificate, chain, sslPolicyErrors) => true;
 
 var builder = WebApplication.CreateBuilder(args);
 
