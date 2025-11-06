@@ -131,8 +131,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Welcome}/{id?}");
 
-// Health check endpoint for Railway
-app.MapGet("/", () => "🚗 Cab Booking System is running! Visit /Home/Welcome to get started.");
+// KEEP these health endpoints:
 app.MapGet("/health", () => new { status = "healthy", timestamp = DateTime.UtcNow });
 app.MapGet("/wake-up", () => "✅ Service is awake and ready!");
 
