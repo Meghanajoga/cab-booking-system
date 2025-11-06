@@ -8,10 +8,6 @@ using MongoDB.Driver;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 
-// Bypass SSL certificate validation for MongoDB
-ServicePointManager.ServerCertificateValidationCallback += 
-    (sender, certificate, chain, sslPolicyErrors) => true;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add environment variables support for production
