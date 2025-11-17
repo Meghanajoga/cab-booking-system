@@ -4,16 +4,27 @@ using CabBookingSystem.Repositories.MongoDB;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-// SSL FIX - Add at the VERY TOP
 using System.Net;
 using System.Net.Security;
+// SSL FIX - Add at the VERY TOP of Program.cs
 using System.Security.Cryptography.X509Certificates;
 
-// Bypass SSL certificate validation
-ServicePointManager.ServerCertificateValidationCallback = 
-    (sender, certificate, chain, sslPolicyErrors) => true;
-
 var builder = WebApplication.CreateBuilder(args);
+
+// ========== SSL/TLS FIXES - ADD AT THE VERY BEGINNING ==========
+// Force TLS 1.2 for MongoDB connections
+ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+AppContext.SetSwitch("System.Net.Http.UseSocketsHttpHandler", false);
+
+// Bypass SSL certificate validation for development (use with caution)
+ServicePointManager.ServerCertificateValidationCallback = 
+    (object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors) =>
+{
+    // For development - accept all certificates
+    // In production, you should implement proper certificate validation
+    return true;
+};
+// ===============================================================
 
 // Add environment variables support for production
 builder.Configuration.AddEnvironmentVariables();
@@ -25,7 +36,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.Configure<MongoDBSettings>(
     builder.Configuration.GetSection("MongoDB"));
 
-// Register MongoDB Client as Singleton
+// Register MongoDB Client as Singleton with SSL configuration
 builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
 {
     var settings = serviceProvider.GetRequiredService<IOptions<MongoDBSettings>>().Value;
@@ -48,7 +59,29 @@ builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
         Console.WriteLine($"🔗 Connecting to MongoDB: [Connection string configured]");
     }
 
-    return new MongoClient(settings.ConnectionString);
+    // ========== MONGO CLIENT SSL CONFIGURATION ==========
+    var mongoSettings = MongoClientSettings.FromConnectionString(settings.ConnectionString);
+    
+    // Configure SSL settings
+    mongoSettings.SslSettings = new SslSettings
+    {
+        EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12,
+        CheckCertificateRevocation = false
+    };
+
+    // Increase timeouts
+    mongoSettings.ServerSelectionTimeout = TimeSpan.FromSeconds(30);
+    mongoSettings.ConnectTimeout = TimeSpan.FromSeconds(30);
+    mongoSettings.SocketTimeout = TimeSpan.FromSeconds(30);
+
+    // Configure connection pool
+    mongoSettings.MaxConnectionPoolSize = 100;
+    mongoSettings.MinConnectionPoolSize = 10;
+    
+    Console.WriteLine("✅ MongoDB client configured with TLS 1.2 and SSL settings");
+    // ====================================================
+
+    return new MongoClient(mongoSettings);
 });
 
 // Register MongoDB Database as Singleton
@@ -94,6 +127,7 @@ try
         var settings = scope.ServiceProvider.GetRequiredService<IOptions<MongoDBSettings>>().Value;
 
         Console.WriteLine($"🏁 Testing MongoDB connection to database: {settings.DatabaseName}");
+        Console.WriteLine($"🔒 SSL Protocol: {ServicePointManager.SecurityProtocol}");
 
         var database = client.GetDatabase(settings.DatabaseName);
         await database.RunCommandAsync((Command<BsonDocument>)"{ping:1}");
@@ -103,6 +137,7 @@ try
 catch (Exception ex)
 {
     Console.WriteLine($"❌ MongoDB connection failed: {ex.Message}");
+    Console.WriteLine($"🔍 Exception details: {ex}");
     // Don't throw here - let the app start so you can see the error page
 }
 
@@ -131,7 +166,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Welcome}/{id?}");
 
-// KEEP these health endpoints:
+// Health check endpoint for Railway
+app.MapGet("/", () => "🚗 Cab Booking System is running! Visit /Home/Welcome to get started.");
 app.MapGet("/health", () => new { status = "healthy", timestamp = DateTime.UtcNow });
 app.MapGet("/wake-up", () => "✅ Service is awake and ready!");
 
@@ -160,7 +196,8 @@ app.MapGet("/db-status", async (IMongoClient client, IOptions<MongoDBSettings> s
                 cabs = await db.GetCollection<BsonDocument>("Cabs").CountDocumentsAsync(new BsonDocument()),
                 payments = await db.GetCollection<BsonDocument>("Payments").CountDocumentsAsync(new BsonDocument())
             },
-            environment = app.Environment.EnvironmentName
+            environment = app.Environment.EnvironmentName,
+            ssl_protocol = ServicePointManager.SecurityProtocol.ToString()
         });
     }
     catch (Exception ex)
@@ -175,5 +212,6 @@ Console.WriteLine("🚀 Cab Booking System starting...");
 Console.WriteLine($"📍 Environment: {app.Environment.EnvironmentName}");
 Console.WriteLine($"📍 Application Name: {builder.Environment.ApplicationName}");
 Console.WriteLine($"📍 Content Root Path: {builder.Environment.ContentRootPath}");
+Console.WriteLine($"📍 SSL Protocol: {ServicePointManager.SecurityProtocol}");
 
 app.Run();
