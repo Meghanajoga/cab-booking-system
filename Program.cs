@@ -4,91 +4,54 @@ using CabBookingSystem.Repositories.MongoDB;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Net;
-using System.Net.Security;
-// SSL FIX - Add at the VERY TOP of Program.cs
-using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ========== SSL/TLS FIXES - ADD AT THE VERY BEGINNING ==========
-// Force TLS 1.2 for MongoDB connections
-ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-AppContext.SetSwitch("System.Net.Http.UseSocketsHttpHandler", false);
-
-// Bypass SSL certificate validation for development (use with caution)
-ServicePointManager.ServerCertificateValidationCallback = 
-    (object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors) =>
-{
-    // For development - accept all certificates
-    // In production, you should implement proper certificate validation
-    return true;
-};
-// ===============================================================
-
-// Add environment variables support for production
+// ======================================================================
+// Load environment variables also (Railway / Production support)
 builder.Configuration.AddEnvironmentVariables();
+// ======================================================================
 
-// Add services to the container.
+// MVC
 builder.Services.AddControllersWithViews();
 
-// Configure MongoDB Settings from appsettings.json AND environment variables
+// MongoDB settings from appsettings.json
 builder.Services.Configure<MongoDBSettings>(
-    builder.Configuration.GetSection("MongoDB"));
+    builder.Configuration.GetSection("MongoDB")
+);
 
-// MINIMAL MongoDB Client Setup - REPLACED YOUR COMPLEX VERSION
+// MongoDB Client (clean + recommended)
 builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
 {
     var settings = serviceProvider.GetRequiredService<IOptions<MongoDBSettings>>().Value;
 
-    // Validate connection string
     if (string.IsNullOrEmpty(settings.ConnectionString))
-    {
-        throw new ArgumentException("MongoDB connection string is not configured. Check appsettings.json or environment variables.");
-    }
+        throw new Exception("❌ MongoDB connection string missing. Check appsettings.json");
 
-    // Log connection info (mask password for security)
-    var connectionInfo = settings.ConnectionString;
-    try
-    {
-        var maskedConnection = connectionInfo.Replace(connectionInfo.Split('@')[0].Split(':')[2], "***");
-        Console.WriteLine($"🔗 Connecting to MongoDB: {maskedConnection}");
-    }
-    catch
-    {
-        Console.WriteLine($"🔗 Connecting to MongoDB: [Connection string configured]");
-    }
+    Console.WriteLine("🔗 MongoDB client initializing...");
 
-    Console.WriteLine("🚀 Creating SIMPLE MongoDB client...");
-    
-    // JUST CREATE THE CLIENT - let MongoDB driver handle everything
-    var client = new MongoClient(settings.ConnectionString);
-    
-    Console.WriteLine("✅ MongoDB client created successfully");
-    return client;
+    return new MongoClient(settings.ConnectionString);
 });
 
-// Register MongoDB Database as Singleton
+// Register MongoDB database
 builder.Services.AddScoped<IMongoDatabase>(serviceProvider =>
 {
     var client = serviceProvider.GetRequiredService<IMongoClient>();
     var settings = serviceProvider.GetRequiredService<IOptions<MongoDBSettings>>().Value;
 
     if (string.IsNullOrEmpty(settings.DatabaseName))
-    {
-        throw new ArgumentException("MongoDB database name is not configured in appsettings.json");
-    }
+        throw new Exception("❌ MongoDB DatabaseName missing from appsettings.json");
 
     return client.GetDatabase(settings.DatabaseName);
 });
 
-// Register MongoDB repositories
+// Register repositories
 builder.Services.AddScoped<ICabRepository, MongoCabRepository>();
 builder.Services.AddScoped<IUserRepository, MongoUserRepository>();
 builder.Services.AddScoped<IBookingRepository, MongoBookingRepository>();
 builder.Services.AddScoped<IPaymentRepository, MongoPaymentRepository>();
 
-// Add session support
+// Session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -97,37 +60,11 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Add logging
 builder.Services.AddLogging();
 
 var app = builder.Build();
 
-// ⚠️ TEMPORARILY REMOVED - Comment out the connection test block
-/*
-try
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var client = scope.ServiceProvider.GetRequiredService<IMongoClient>();
-        var settings = scope.ServiceProvider.GetRequiredService<IOptions<MongoDBSettings>>().Value;
-
-        Console.WriteLine($"🏁 Testing MongoDB connection to database: {settings.DatabaseName}");
-        Console.WriteLine($"🔒 SSL Protocol: {ServicePointManager.SecurityProtocol}");
-
-        var database = client.GetDatabase(settings.DatabaseName);
-        await database.RunCommandAsync((Command<BsonDocument>)"{ping:1}");
-        Console.WriteLine("✅ MongoDB connection successful!");
-    }
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"❌ MongoDB connection failed: {ex.Message}");
-    Console.WriteLine($"🔍 Exception details: {ex}");
-    // Don't throw here - let the app start so you can see the error page
-}
-*/
-
-// Configure the HTTP request pipeline.
+// Error handling
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -135,68 +72,58 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
-    // Detailed errors in development
     app.UseDeveloperExceptionPage();
 }
 
-// In production, Railway handles HTTPS redirection
-// app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseSession();
 
+// MVC Routing
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Welcome}/{id?}");
+    pattern: "{controller=Home}/{action=Welcome}/{id?}"
+);
 
-// Health check endpoint for Railway
-app.MapGet("/health", () => new { status = "healthy", timestamp = DateTime.UtcNow });
-app.MapGet("/wake-up", () => "✅ Service is awake and ready!");
+// ======================================================================
+// Health endpoint for Railway
+app.MapGet("/health", () => new { status = "healthy", time = DateTime.UtcNow });
 
-// Add a test endpoint to check database status
+// ======================================================================
+// MongoDB diagnostic endpoint
 app.MapGet("/db-status", async (IMongoClient client, IOptions<MongoDBSettings> settings) =>
 {
     try
     {
-        var database = client.GetDatabase(settings.Value.DatabaseName);
-        await database.RunCommandAsync((Command<BsonDocument>)"{ping:1}");
-
-        // Test if we can read from collections
         var db = client.GetDatabase(settings.Value.DatabaseName);
-        var usersCount = await db.GetCollection<BsonDocument>("Users").CountDocumentsAsync(new BsonDocument());
-        var bookingsCount = await db.GetCollection<BsonDocument>("Bookings").CountDocumentsAsync(new BsonDocument());
 
-        return Results.Ok(new
+        // Ping
+        await db.RunCommandAsync((Command<BsonDocument>)"{ ping: 1 }");
+
+        // Count docs
+        var result = new
         {
             status = "connected",
             database = settings.Value.DatabaseName,
-            message = "MongoDB connection is working properly",
             collections = new
             {
-                users = usersCount,
-                bookings = bookingsCount,
+                users = await db.GetCollection<BsonDocument>("Users").CountDocumentsAsync(new BsonDocument()),
+                bookings = await db.GetCollection<BsonDocument>("Bookings").CountDocumentsAsync(new BsonDocument()),
                 cabs = await db.GetCollection<BsonDocument>("Cabs").CountDocumentsAsync(new BsonDocument()),
                 payments = await db.GetCollection<BsonDocument>("Payments").CountDocumentsAsync(new BsonDocument())
-            },
-            environment = app.Environment.EnvironmentName,
-            ssl_protocol = ServicePointManager.SecurityProtocol.ToString()
-        });
+            }
+        };
+
+        return Results.Ok(result);
     }
     catch (Exception ex)
     {
-        return Results.Problem(
-            detail: $"MongoDB connection failed: {ex.Message}",
-            statusCode: 500);
+        return Results.Problem($"MongoDB connection failed: {ex.Message}", statusCode: 500);
     }
 });
+// ======================================================================
 
-Console.WriteLine("🚀 Cab Booking System starting...");
-Console.WriteLine($"📍 Environment: {app.Environment.EnvironmentName}");
-Console.WriteLine($"📍 Application Name: {builder.Environment.ApplicationName}");
-Console.WriteLine($"📍 Content Root Path: {builder.Environment.ContentRootPath}");
-Console.WriteLine($"📍 SSL Protocol: {ServicePointManager.SecurityProtocol}");
+Console.WriteLine("🚀 Cab Booking System Started Successfully");
+Console.WriteLine($"📌 Environment: {app.Environment.EnvironmentName}");
 
 app.Run();

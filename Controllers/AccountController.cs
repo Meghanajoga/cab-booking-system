@@ -68,6 +68,7 @@ namespace CabBookingSystem.Controllers
 
         // POST: /Account/Register
         [HttpPost]
+	[ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
@@ -93,6 +94,7 @@ namespace CabBookingSystem.Controllers
                     LastName = model.LastName,
                     Email = model.Email,
                     PasswordHash = model.Password // In real app, hash this password
+		    CreatedAt = DateTime.UtcNow
                 };
 
                 await _userRepository.AddAsync(user);
@@ -106,6 +108,7 @@ namespace CabBookingSystem.Controllers
             }
             catch (Exception ex)
             {
+		Console.WriteLine($"Registration error: {ex}");
                 ModelState.AddModelError("", "An error occurred during registration. Please try again.");
                 return View(model);
             }

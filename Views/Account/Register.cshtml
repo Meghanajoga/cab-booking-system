@@ -165,6 +165,19 @@
                 </div>
 
                 <form method="post" class="auth-form">
+    <!-- ADD THIS ERROR DISPLAY SECTION -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <h5>Please fix the following errors:</h5>
+            <ul class="mb-0">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -218,3 +231,25 @@
         </div>
     </div>
 </div>
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            console.log('Register page loaded');
+            
+            $('form').on('submit', function(e) {
+                console.log('Form submitted!');
+                console.log('Form valid:', $(this).valid());
+                
+                // Check if all required fields are filled
+                var isValid = true;
+                $('input[required]').each(function() {
+                    if (!$(this).val()) {
+                        isValid = false;
+                        console.log('Missing field:', $(this).attr('name'));
+                    }
+                });
+                console.log('All required fields filled:', isValid);
+            });
+        });
+    </script>
+}
