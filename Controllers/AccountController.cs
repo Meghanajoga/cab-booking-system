@@ -94,7 +94,7 @@ namespace CabBookingSystem.Controllers
     			LastName = model.LastName,
     			Email = model.Email,
     			PasswordHash = model.Password, // TODO: hash password
-    			CreatedAt = DateTime.UtcNow
+    			RegistrationDate = DateTime.UtcNow
 		};
 
 
