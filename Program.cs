@@ -36,7 +36,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.Configure<MongoDBSettings>(
     builder.Configuration.GetSection("MongoDB"));
 
-// Register MongoDB Client as Singleton with SSL configuration
+// MINIMAL MongoDB Client Setup - REPLACED YOUR COMPLEX VERSION
 builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
 {
     var settings = serviceProvider.GetRequiredService<IOptions<MongoDBSettings>>().Value;
@@ -59,29 +59,13 @@ builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
         Console.WriteLine($"🔗 Connecting to MongoDB: [Connection string configured]");
     }
 
-    // ========== MONGO CLIENT SSL CONFIGURATION ==========
-    var mongoSettings = MongoClientSettings.FromConnectionString(settings.ConnectionString);
+    Console.WriteLine("🚀 Creating SIMPLE MongoDB client...");
     
-    // Configure SSL settings
-    mongoSettings.SslSettings = new SslSettings
-    {
-        EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12,
-        CheckCertificateRevocation = false
-    };
-
-    // Increase timeouts
-    mongoSettings.ServerSelectionTimeout = TimeSpan.FromSeconds(30);
-    mongoSettings.ConnectTimeout = TimeSpan.FromSeconds(30);
-    mongoSettings.SocketTimeout = TimeSpan.FromSeconds(30);
-
-    // Configure connection pool
-    mongoSettings.MaxConnectionPoolSize = 100;
-    mongoSettings.MinConnectionPoolSize = 10;
+    // JUST CREATE THE CLIENT - let MongoDB driver handle everything
+    var client = new MongoClient(settings.ConnectionString);
     
-    Console.WriteLine("✅ MongoDB client configured with TLS 1.2 and SSL settings");
-    // ====================================================
-
-    return new MongoClient(mongoSettings);
+    Console.WriteLine("✅ MongoDB client created successfully");
+    return client;
 });
 
 // Register MongoDB Database as Singleton
@@ -118,7 +102,8 @@ builder.Services.AddLogging();
 
 var app = builder.Build();
 
-// Test MongoDB connection on startup
+// ⚠️ TEMPORARILY REMOVED - Comment out the connection test block
+/*
 try
 {
     using (var scope = app.Services.CreateScope())
@@ -140,6 +125,7 @@ catch (Exception ex)
     Console.WriteLine($"🔍 Exception details: {ex}");
     // Don't throw here - let the app start so you can see the error page
 }
+*/
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

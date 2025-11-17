@@ -22,29 +22,48 @@ namespace CabBookingSystem.Repositories.MongoDB
             var database = client.GetDatabase(settings.Value.DatabaseName);
             _cabs = database.GetCollection<Cab>("Cabs");
 
-            // Seed initial cabs if collection is empty
-            SeedInitialCabs();
+            // Start seeding in background - don't await
+            _ = SeedInitialCabs();
         }
 
-        private async void SeedInitialCabs()
+        private async Task SeedInitialCabs()
         {
-            var count = await _cabs.CountDocumentsAsync(_ => true);
-            if (count == 0)
+            try
             {
-                var initialCabs = new List<Cab>
+                Console.WriteLine("🌱 Checking if cabs need to be seeded...");
+                
+                var count = await _cabs.CountDocumentsAsync(_ => true);
+                if (count == 0)
                 {
-                    new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Mini, IsAvailable = true },
-                    new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Mini, IsAvailable = true },
-                    new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Mini, IsAvailable = true },
-                    new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Sedan, IsAvailable = true },
-                    new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Sedan, IsAvailable = true },
-                    new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Sedan, IsAvailable = true },
-                    new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.SUV, IsAvailable = true },
-                    new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.SUV, IsAvailable = true },
-                    new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Luxury, IsAvailable = true },
-                    new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Luxury, IsAvailable = true }
-                };
-                await _cabs.InsertManyAsync(initialCabs);
+                    Console.WriteLine("🚗 Seeding initial cabs data...");
+                    
+                    var initialCabs = new List<Cab>
+                    {
+                        new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Mini, IsAvailable = true },
+                        new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Mini, IsAvailable = true },
+                        new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Mini, IsAvailable = true },
+                        new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Sedan, IsAvailable = true },
+                        new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Sedan, IsAvailable = true },
+                        new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Sedan, IsAvailable = true },
+                        new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.SUV, IsAvailable = true },
+                        new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.SUV, IsAvailable = true },
+                        new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Luxury, IsAvailable = true },
+                        new Cab { Id = Guid.NewGuid().ToString(), Type = CabType.Luxury, IsAvailable = true }
+                    };
+                    
+                    await _cabs.InsertManyAsync(initialCabs);
+                    Console.WriteLine($"✅ Successfully seeded {initialCabs.Count} cabs");
+                }
+                else
+                {
+                    Console.WriteLine($"📊 Database already has {count} cabs - no seeding needed");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️ Cab seeding failed: {ex.Message}");
+                Console.WriteLine("📝 App will continue without initial cabs data");
+                // DON'T throw - let the app start normally
             }
         }
 
