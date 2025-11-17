@@ -86,16 +86,17 @@ namespace CabBookingSystem.Controllers
                     return View(model);
                 }
 
-                // Create new user
-                var user = new ApplicationUser // or User, depending on your model
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    PasswordHash = model.Password // In real app, hash this password
-		    CreatedAt = DateTime.UtcNow
-                };
+                // ApplicationUser = your user model class
+		var user = new ApplicationUser
+		{
+    			Id = Guid.NewGuid().ToString(),
+    			FirstName = model.FirstName,
+    			LastName = model.LastName,
+    			Email = model.Email,
+    			PasswordHash = model.Password, // TODO: hash password
+    			CreatedAt = DateTime.UtcNow
+		};
+
 
                 await _userRepository.AddAsync(user);
 
